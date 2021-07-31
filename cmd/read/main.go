@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"periph.io/x/periph/conn/gpio/gpioreg"
+	"periph.io/x/periph/host"
 	"time"
 )
 
@@ -20,6 +21,10 @@ func main() {
 	if *help || *pinName == "" {
 		flag.Usage()
 		os.Exit(1)
+	}
+
+	if _, err := host.Init(); err != nil {
+		panic(err)
 	}
 
 	button := device.NewButton(gpioreg.ByName(*pinName), 3*time.Second)
@@ -37,7 +42,7 @@ func main() {
 
 	g.Go(func() error {
 		for a := range actions {
-			print(a)
+			println(a)
 		}
 
 		return nil

@@ -13,7 +13,7 @@ import (
 func TestButton(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		pin := &gpiotest.Pin{EdgesChan: make(chan gpio.Level)}
-		button := device.NewButton(pin, 1*time.Second)
+		button := device.NewButton(pin, time.Millisecond)
 
 		ctx, cancel := context.WithCancel(context.Background())
 
@@ -21,13 +21,13 @@ func TestButton(t *testing.T) {
 		defer close(actions)
 
 		go func() {
+			defer cancel()
+
 			pin.EdgesChan <- gpio.High
 			assert.Equal(t, <-actions, device.Push)
 
 			pin.EdgesChan <- gpio.Low
 			assert.Equal(t, <-actions, device.Release)
-
-			cancel()
 		}()
 
 		err := button.Run(ctx, actions)
