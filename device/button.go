@@ -2,7 +2,6 @@ package device
 
 import (
 	"context"
-	"fmt"
 	"periph.io/x/periph/conn/gpio"
 	"time"
 )
@@ -27,10 +26,6 @@ type Button struct {
 }
 
 func (t *Button) Run(ctx context.Context, actions chan<- Action) error {
-	if err := t.pin.In(gpio.PullNoChange, gpio.BothEdges); err != nil {
-		return fmt.Errorf("setup pin input failed: %w", err)
-	}
-
 	for {
 		select {
 		case <-ctx.Done():

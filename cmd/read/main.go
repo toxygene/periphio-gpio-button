@@ -7,6 +7,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"os"
 	"os/signal"
+	"periph.io/x/periph/conn/gpio"
 	"periph.io/x/periph/conn/gpio/gpioreg"
 	"periph.io/x/periph/host"
 	"time"
@@ -27,7 +28,13 @@ func main() {
 		panic(err)
 	}
 
-	button := device.NewButton(gpioreg.ByName(*pinName), 3*time.Second)
+	buttonPin := gpioreg.ByName(*pinName)
+
+	if err := buttonPin.In(gpio.PullNoChange, gpio.BothEdges); err != nil {
+		panic(err)
+	}
+
+	button := device.NewButton(buttonPin, 3*time.Second)
 
 	g := new(errgroup.Group)
 
